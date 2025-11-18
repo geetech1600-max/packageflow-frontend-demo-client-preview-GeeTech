@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PackageFlow - Mobile Package Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-light: #5dade2;
+            --primary-dark: #2980b9;
+            --secondary: #2c3e50;
+            --secondary-light: #34495e;
+            --success: #2ecc71;
+            --success-light: #58d68d;
+            --warning: #f39c12;
+            --warning-light: #f7dc6f;
+            --danger: #e74c3c;
+            --danger-light: #ec7063;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --gradient: linear-gradient(135deg, #3498db, #2c3e50);
+            --gradient-light: linear-gradient(135deg, #5dade2, #34495e);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+        
+        .mobile-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* App Header */
+        .app-header {
+            background: var(--gradient);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .app-title i {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* App Content */
+        .app-content {
+            padding: 15px;
+            animation: fadeIn 0.5s ease-out;
+            padding-bottom: 80px; /* Space for bottom nav */
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Welcome Card */
+        .welcome-card {
+            background: var(--gradient);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+            animation: slideInLeft 0.6s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .welcome-card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+        }
+        
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+        
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-card-title {
+            font-size: 0.8rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .stat-card-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        .stat-card-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        /* Section Titles */
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            margin: 20px 0 15px;
+            font-weight: 600;
+        }
+        
+        /* Package List */
+        .package-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .package-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .package-item:active {
+            transform: scale(0.98);
+            background: #f8f9fa;
+        }
+        
+        .package-info {
+            flex: 1;
+        }
+        
+        .package-id {
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        .package-details {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 3px;
+        }
+        
+        .package-status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-in-transit {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-delivered {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .action-btn {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+            background: #f8f9fa;
+        }
+        
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .action-text {
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-item:active {
+            background: #f8f9fa;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+        
+        /* Tab Bar */
+        .tab-bar {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tab.active {
+            background: var(--gradient);
+            color: white;
+        }
+        
+        /* Map Preview */
+        .map-preview {
+            height: 150px;
+            background: #e9ecef;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            color: var(--gray);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Interactive Map */
+        .interactive-map {
+            height: 400px;
+            background: #e9ecef;
+            border-radius: 12px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: #e9ecef;
+            background-image: url('https://maps.googleapis.com/maps/api/staticmap?center=Lusaka,Zambia&zoom=12&size=400x400&maptype=roadmap&key=YOUR_API_KEY');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .map-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--danger);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+        
+        .map-marker::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            top: 5px;
+            left: 5px;
+        }
+        
+        .map-marker.active {
+            background: var(--success);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .map-marker-label {
+            position: absolute;
+            top: -25px;
+            left: -10px;
+            background: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            transform: rotate(45deg);
+        }
+        
+        .map-controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .map-control {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.7rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 3px;
+        }
+        
+        .legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        /* Delivery Proof */
+        .delivery-proof {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .proof-btn {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .proof-btn:active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Driver Info */
+        .driver-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 15px;
+        }
+        
+        .driver-details {
+            flex: 1;
+        }
+        
+        .driver-name {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .driver-rating {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 3px;
+        }
+        
+        .rating-stars {
+            color: #f39c12;
+        }
+        
+        /* Switch View Button */
+        .switch-view {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .switch-view:active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        /* Views */
+        .view {
+            display: none;
+        }
+        
+        .view-active {
+            display: block;
+        }
+        
+        /* Search and Filter */
+        .search-box {
+            background: white;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .filter-option {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .filter-option.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+            z-index: 90;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        /* QR Code */
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+        
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .mobile-container {
+                max-width: 400px;
+                margin: 20px auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                border-radius: 20px;
+                overflow: hidden;
+                min-height: 90vh;
+            }
+            
+            body {
+                background: var(--gradient);
+                padding: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Driver Views -->
+        
+        <!-- Driver Dashboard -->
+        <div class="view view-active" id="driverDashboard">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-boxes"></i>
+                    <span>PackageFlow</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="notificationsBtn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="user-avatar">CT</div>
+                </div>
+            </div>
+            
+            <button class="switch-view" id="switchToAdmin">Admin</button>
+            
+            <div class="app-content">
+                <div class="welcome-card">
+                    <h2>Hello, Chanda Tembo!</h2>
+                    <p>You have 5 deliveries today</p>
+                </div>
+                
+                <div class="search-box">
+                    <i class="fas fa-search" style="color: var(--gray);"></i>
+                    <input type="text" placeholder="Search packages...">
+                </div>
+                
+                <div class="filter-options">
+                    <div class="filter-option active">All</div>
+                    <div class="filter-option">Pending</div>
+                    <div class="filter-option">In Transit</div>
+                    <div class="filter-option">Delivered</div>
+                </div>
+                
+                <div class="package-list">
+                    <div class="package-item" data-package="PKG-78343">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78343</div>
+                            <div class="package-details">Mwansa Ngulube • Point B</div>
+                            <div class="package-details">Due by 14:00</div>
+                        </div>
+                        <div class="package-status status-in-transit">In Transit</div>
+                    </div>
+                    
+                    <div class="package-item" data-package="PKG-78349">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78349</div>
+                            <div class="package-details">Brian Lungu • Point A</div>
+                            <div class="package-details">Due by 14:30</div>
+                        </div>
+                        <div class="package-status status-pending">Pending</div>
+                    </div>
+                    
+                    <div class="package-item" data-package="PKG-78351">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78351</div>
+                            <div class="package-details">Ruth Banda • Point B</div>
+                            <div class="package-details">Due by 15:00</div>
+                        </div>
+                        <div class="package-status status-pending">Pending</div>
+                    </div>
+                </div>
+                
+                <div class="map-preview">
+                    <i class="fas fa-map-marked-alt" style="font-size: 2rem; margin-right: 10px;"></i>
+                    <span>Delivery Route</span>
+                </div>
+            </div>
+            
+            <div class="fab" id="scanFab">
+                <i class="fas fa-qrcode"></i>
+            </div>
+            
+            <div class="bottom-nav">
+                <a href="#" class="nav-item active" data-view="driverDashboard">
+                    <i class="fas fa-home nav-icon"></i>
+                    <span class="nav-text">Home</span>
+                </a>
+                <a href="#" class="nav-item" data-view="driverMap">
+                    <i class="fas fa-map-marker-alt nav-icon"></i>
+                    <span class="nav-text">Map</span>
+                </a>
+                <a href="#" class="nav-item" data-view="driverCompleted">
+                    <i class="fas fa-check-circle nav-icon"></i>
+                    <span class="nav-text">Completed</span>
+                </a>
+                <a href="#" class="nav-item" data-view="driverStats">
+                    <i class="fas fa-chart-bar nav-icon"></i>
+                    <span class="nav-text">Stats</span>
+                </a>
+                <a href="#" class="nav-item" data-view="driverSettings">
+                    <i class="fas fa-cog nav-icon"></i>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Driver Map View -->
+        <div class="view" id="driverMap">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Delivery Map</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="interactive-map">
+                    <div class="map-image">
+                        <!-- Map markers for delivery locations -->
+                        <div class="map-marker" style="top: 30%; left: 40%;" data-location="PKG-78343">
+                            <div class="map-marker-label">PKG-78343</div>
+                        </div>
+                        <div class="map-marker" style="top: 50%; left: 60%;" data-location="PKG-78349">
+                            <div class="map-marker-label">PKG-78349</div>
+                        </div>
+                        <div class="map-marker" style="top: 70%; left: 30%;" data-location="PKG-78351">
+                            <div class="map-marker-label">PKG-78351</div>
+                        </div>
+                        <div class="map-marker active" style="top: 20%; left: 50%;" data-location="Current">
+                            <div class="map-marker-label">You</div>
+                        </div>
+                    </div>
+                    
+                    <div class="map-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--danger);"></div>
+                            <span>Delivery Points</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--success);"></div>
+                            <span>Your Location</span>
+                        </div>
+                    </div>
+                    
+                    <div class="map-controls">
+                        <div class="map-control" id="zoomIn">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="map-control" id="zoomOut">
+                            <i class="fas fa-minus"></i>
+                        </div>
+                        <div class="map-control" id="centerMap">
+                            <i class="fas fa-crosshairs"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Today's Stops</div>
+                
+                <div class="package-list">
+                    <div class="package-item">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78343</div>
+                            <div class="package-details">Mwansa Ngulube • 2.3 km</div>
+                            <div class="package-details">123 Independence Ave, Lusaka</div>
+                        </div>
+                        <div class="package-status status-in-transit">Next Stop</div>
+                    </div>
+                    
+                    <div class="package-item">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78349</div>
+                            <div class="package-details">Brian Lungu • 4.7 km</div>
+                            <div class="package-details">45 Cairo Road, Lusaka</div>
+                        </div>
+                        <div class="package-status status-pending">Pending</div>
+                    </div>
+                    
+                    <div class="package-item">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78351</div>
+                            <div class="package-details">Ruth Banda • 6.2 km</div>
+                            <div class="package-details">78 Lumumba Rd, Lusaka</div>
+                        </div>
+                        <div class="package-status status-pending">Pending</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Driver Completed Packages -->
+        <div class="view" id="driverCompleted">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Completed Deliveries</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="search-box">
+                    <i class="fas fa-search" style="color: var(--gray);"></i>
+                    <input type="text" placeholder="Search completed packages...">
+                </div>
+                
+                <div class="filter-options">
+                    <div class="filter-option active">Today</div>
+                    <div class="filter-option">This Week</div>
+                    <div class="filter-option">This Month</div>
+                </div>
+                
+                <div class="package-list">
+                    <div class="package-item">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78342</div>
+                            <div class="package-details">Nchimunya Mwamba • Point A</div>
+                            <div class="package-details">Delivered: 10:30 AM</div>
+                        </div>
+                        <div class="package-status status-delivered">Delivered</div>
+                    </div>
+                    
+                    <div class="package-item">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78338</div>
+                            <div class="package-details">Davison Soko • Point B</div>
+                            <div class="package-details">Delivered: 09:45 AM</div>
+                        </div>
+                        <div class="package-status status-delivered">Delivered</div>
+                    </div>
+                    
+                    <div class="package-item">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78335</div>
+                            <div class="package-details">Sarah Kunda • Point A</div>
+                            <div class="package-details">Delivered: Yesterday</div>
+                        </div>
+                        <div class="package-status status-delivered">Delivered</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Driver Stats -->
+        <div class="view" id="driverStats">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>My Performance</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="welcome-card">
+                    <h2>Performance Overview</h2>
+                    <p>Your delivery stats for this month</p>
+                </div>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">DELIVERIES</div>
+                            <div class="stat-card-icon" style="background: var(--primary);">
+                                <i class="fas fa-box"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">142</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">SUCCESS RATE</div>
+                            <div class="stat-card-icon" style="background: var(--success);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">94%</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">AVG. TIME</div>
+                            <div class="stat-card-icon" style="background: var(--warning);">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">38m</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">RATING</div>
+                            <div class="stat-card-icon" style="background: var(--secondary);">
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">4.8</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Weekly Performance</div>
+                
+                <div class="map-preview">
+                    <i class="fas fa-chart-line" style="font-size: 2rem; margin-right: 10px;"></i>
+                    <span>Performance Chart</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Driver Settings -->
+        <div class="view" id="driverSettings">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="section-title">Account</div>
+                
+                <div class="driver-info">
+                    <div class="user-avatar">CT</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Chanda Tembo</div>
+                        <div class="driver-rating">Driver ID: DRV-0042</div>
+                    </div>
+                </div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--primary);">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <div class="action-text">Edit Profile</div>
+                </div>
+                
+                <div class="section-title">Preferences</div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--success);">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="action-text">Notifications</div>
+                </div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--warning);">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="action-text">Map Preferences</div>
+                </div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--danger);">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <div class="action-text">Logout</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Package Details View -->
+        <div class="view" id="packageDetails">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-box"></i>
+                    <span>Package Details</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="package-item">
+                    <div class="package-info">
+                        <div class="package-id">PKG-78343</div>
+                        <div class="package-details">Lusaka Office Supplies</div>
+                        <div class="package-status status-in-transit">In Transit</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Recipient Information</div>
+                
+                <div class="driver-info">
+                    <div class="driver-details">
+                        <div class="driver-name">Mwansa Ngulube</div>
+                        <div class="driver-rating">+260 97 123 4567</div>
+                        <div class="driver-rating">123 Independence Ave, Lusaka</div>
+                        <div class="driver-rating">Drop Point: Point B</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Package Information</div>
+                
+                <div class="driver-info">
+                    <div class="driver-details">
+                        <div class="driver-name">Office Supplies</div>
+                        <div class="driver-rating">2 boxes of stationery</div>
+                        <div class="driver-rating">Fragile: No</div>
+                        <div class="driver-rating">Due by: 14:00 Today</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Delivery Proof</div>
+                
+                <div class="delivery-proof">
+                    <button class="proof-btn" id="takePhotoBtn">
+                        <i class="fas fa-camera" style="font-size: 1.2rem;"></i>
+                        Take Photo
+                    </button>
+                    <button class="proof-btn" id="getSignatureBtn">
+                        <i class="fas fa-signature" style="font-size: 1.2rem;"></i>
+                        Get Signature
+                    </button>
+                </div>
+                
+                <div class="section-title">Actions</div>
+                
+                <button class="btn btn-primary btn-block" id="startDeliveryBtn">
+                    <i class="fas fa-play"></i>
+                    Start Delivery
+                </button>
+                
+                <button class="btn btn-primary btn-block" id="completeDeliveryBtn" style="margin-top: 10px; background: var(--success);">
+                    <i class="fas fa-check"></i>
+                    Mark as Delivered
+                </button>
+                
+                <button class="btn btn-primary btn-block" id="reportIssueBtn" style="margin-top: 10px; background: var(--danger);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Report Issue
+                </button>
+            </div>
+        </div>
+        
+        <!-- Admin Views -->
+        
+        <!-- Admin Dashboard -->
+        <div class="view" id="adminDashboard">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-boxes"></i>
+                    <span>PackageFlow Admin</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="notificationsBtn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="user-avatar">CM</div>
+                </div>
+            </div>
+            
+            <button class="switch-view" id="switchToDriver">Driver</button>
+            
+            <div class="app-content">
+                <div class="welcome-card">
+                    <h2>Admin Dashboard</h2>
+                    <p>Manage your delivery operations</p>
+                </div>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">TODAY</div>
+                            <div class="stat-card-icon" style="background: var(--gradient);">
+                                <i class="fas fa-box"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">42</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">IN TRANSIT</div>
+                            <div class="stat-card-icon" style="background: var(--warning);">
+                                <i class="fas fa-shipping-fast"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">18</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">DELIVERED</div>
+                            <div class="stat-card-icon" style="background: var(--success);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">24</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">ISSUES</div>
+                            <div class="stat-card-icon" style="background: var(--danger);">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">3</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Quick Actions</div>
+                
+                <div class="quick-actions">
+                    <button class="action-btn" id="newPackageBtn">
+                        <div class="action-icon" style="background: var(--gradient);">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="action-text">New Package</div>
+                    </button>
+                    
+                    <button class="action-btn" data-view="adminDrivers">
+                        <div class="action-icon" style="background: var(--success);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="action-text">Manage Drivers</div>
+                    </button>
+                    
+                    <button class="action-btn" data-view="adminPackages">
+                        <div class="action-icon" style="background: var(--warning);">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="action-text">All Packages</div>
+                    </button>
+                    
+                    <button class="action-btn" data-view="adminReports">
+                        <div class="action-icon" style="background: var(--primary);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="action-text">Reports</div>
+                    </button>
+                </div>
+                
+                <div class="section-title">Driver Performance</div>
+                
+                <div class="driver-info" data-driver="CB">
+                    <div class="user-avatar">CB</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Chanda Banda</div>
+                        <div class="driver-rating">
+                            <span class="rating-stars">★★★★★</span> 4.9 (93% success)
+                        </div>
+                    </div>
+                    <div class="package-status status-in-transit">On Duty</div>
+                </div>
+                
+                <div class="driver-info" data-driver="MT">
+                    <div class="user-avatar">MT</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Mwila Tembo</div>
+                        <div class="driver-rating">
+                            <span class="rating-stars">★★★★☆</span> 4.6 (86% success)
+                        </div>
+                    </div>
+                    <div class="package-status status-in-transit">On Duty</div>
+                </div>
+            </div>
+            
+            <div class="fab" id="adminFab">
+                <i class="fas fa-plus"></i>
+            </div>
+            
+            <div class="bottom-nav">
+                <a href="#" class="nav-item active" data-view="adminDashboard">
+                    <i class="fas fa-home nav-icon"></i>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-view="adminPackages">
+                    <i class="fas fa-box nav-icon"></i>
+                    <span class="nav-text">Packages</span>
+                    <div class="notification-badge">5</div>
+                </a>
+                <a href="#" class="nav-item" data-view="adminDrivers">
+                    <i class="fas fa-users nav-icon"></i>
+                    <span class="nav-text">Drivers</span>
+                </a>
+                <a href="#" class="nav-item" data-view="adminReports">
+                    <i class="fas fa-chart-bar nav-icon"></i>
+                    <span class="nav-text">Reports</span>
+                </a>
+                <a href="#" class="nav-item" data-view="adminSettings">
+                    <i class="fas fa-cog nav-icon"></i>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Admin Packages View -->
+        <div class="view" id="adminPackages">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-boxes"></i>
+                    <span>All Packages</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="search-box">
+                    <i class="fas fa-search" style="color: var(--gray);"></i>
+                    <input type="text" placeholder="Search packages...">
+                </div>
+                
+                <div class="filter-options">
+                    <div class="filter-option active">All</div>
+                    <div class="filter-option">Pending</div>
+                    <div class="filter-option">In Transit</div>
+                    <div class="filter-option">Delivered</div>
+                    <div class="filter-option">Issues</div>
+                </div>
+                
+                <div class="package-list">
+                    <div class="package-item" data-package="PKG-78342">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78342</div>
+                            <div class="package-details">Nchimunya Mwamba • Chanda Banda</div>
+                            <div class="package-details">Point A • 10:30 AM</div>
+                        </div>
+                        <div class="package-status status-delivered">Delivered</div>
+                    </div>
+                    
+                    <div class="package-item" data-package="PKG-78343">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78343</div>
+                            <div class="package-details">Mwansa Ngulube • Mwila Tembo</div>
+                            <div class="package-details">Point B • Due 14:00</div>
+                        </div>
+                        <div class="package-status status-in-transit">In Transit</div>
+                    </div>
+                    
+                    <div class="package-item" data-package="PKG-78344">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78344</div>
+                            <div class="package-details">Mulenga Kapasa • Joseph Phiri</div>
+                            <div class="package-details">Point A • Due 15:30</div>
+                        </div>
+                        <div class="package-status status-pending">Pending</div>
+                    </div>
+                    
+                    <div class="package-item" data-package="PKG-78345">
+                        <div class="package-info">
+                            <div class="package-id">PKG-78345</div>
+                            <div class="package-details">Esther Mwale • Chanda Banda</div>
+                            <div class="package-details">Point B • Issue Reported</div>
+                        </div>
+                        <div class="package-status status-failed">Failed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Drivers View -->
+        <div class="view" id="adminDrivers">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-users"></i>
+                    <span>Driver Management</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="search-box">
+                    <i class="fas fa-search" style="color: var(--gray);"></i>
+                    <input type="text" placeholder="Search drivers...">
+                </div>
+                
+                <div class="filter-options">
+                    <div class="filter-option active">All</div>
+                    <div class="filter-option">On Duty</div>
+                    <div class="filter-option">Available</div>
+                    <div class="filter-option">Offline</div>
+                </div>
+                
+                <div class="driver-info" data-driver="CB">
+                    <div class="user-avatar">CB</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Chanda Banda</div>
+                        <div class="driver-rating">+260 97 123 4567 • Toyota Hilux</div>
+                        <div class="driver-rating">
+                            <span class="rating-stars">★★★★★</span> 4.9 (15 deliveries)
+                        </div>
+                    </div>
+                    <div class="package-status status-in-transit">On Duty</div>
+                </div>
+                
+                <div class="driver-info" data-driver="MT">
+                    <div class="user-avatar">MT</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Mwila Tembo</div>
+                        <div class="driver-rating">+260 96 234 5678 • Nissan Navara</div>
+                        <div class="driver-rating">
+                            <span class="rating-stars">★★★★☆</span> 4.6 (12 deliveries)
+                        </div>
+                    </div>
+                    <div class="package-status status-in-transit">On Duty</div>
+                </div>
+                
+                <div class="driver-info" data-driver="JP">
+                    <div class="user-avatar">JP</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Joseph Phiri</div>
+                        <div class="driver-rating">+260 95 345 6789 • Isuzu D-Max</div>
+                        <div class="driver-rating">
+                            <span class="rating-stars">★★★★☆</span> 4.3 (8 deliveries)
+                        </div>
+                    </div>
+                    <div class="package-status status-pending">Available</div>
+                </div>
+                
+                <div class="driver-info" data-driver="GM">
+                    <div class="user-avatar">GM</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Grace Mwansa</div>
+                        <div class="driver-rating">+260 97 456 7890 • Toyota Corolla</div>
+                        <div class="driver-rating">
+                            <span class="rating-stars">★★★★☆</span> 4.5 (0 deliveries today)
+                        </div>
+                    </div>
+                    <div class="package-status status-pending">Available</div>
+                </div>
+            </div>
+            
+            <div class="fab" id="addDriverFab">
+                <i class="fas fa-user-plus"></i>
+            </div>
+        </div>
+        
+        <!-- Admin Reports View -->
+        <div class="view" id="adminReports">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports & Analytics</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="filter-options">
+                    <div class="filter-option active">Today</div>
+                    <div class="filter-option">This Week</div>
+                    <div class="filter-option">This Month</div>
+                    <div class="filter-option">Custom</div>
+                </div>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">TOTAL</div>
+                            <div class="stat-card-icon" style="background: var(--primary);">
+                                <i class="fas fa-box"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">156</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">SUCCESS RATE</div>
+                            <div class="stat-card-icon" style="background: var(--success);">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">92%</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">AVG. TIME</div>
+                            <div class="stat-card-icon" style="background: var(--warning);">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">38m</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-title">ISSUES</div>
+                            <div class="stat-card-icon" style="background: var(--danger);">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">12</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Delivery Performance</div>
+                
+                <div class="map-preview">
+                    <i class="fas fa-chart-line" style="font-size: 2rem; margin-right: 10px;"></i>
+                    <span>Performance Chart</span>
+                </div>
+                
+                <div class="section-title">Driver Rankings</div>
+                
+                <div class="driver-info">
+                    <div class="user-avatar">CB</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Chanda Banda</div>
+                        <div class="driver-rating">Top Performer • 142 deliveries</div>
+                        <div class="driver-rating">
+                            <span class="rating-stars">★★★★★</span> 4.9 (94% success rate)
+                        </div>
+                    </div>
+                    <div class="package-status status-delivered">1st</div>
+                </div>
+                
+                <div class="driver-info">
+                    <div class="user-avatar">MT</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Mwila Tembo</div>
+                        <div class="driver-rating">128 deliveries</div>
+                        <div class="driver-rating">
+                            <span class="rating-stars">★★★★☆</span> 4.6 (86% success rate)
+                        </div>
+                    </div>
+                    <div class="package-status status-in-transit">2nd</div>
+                </div>
+                
+                <div class="driver-info">
+                    <div class="user-avatar">JP</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Joseph Phiri</div>
+                        <div class="driver-rating">115 deliveries</div>
+                        <div class="driver-rating">
+                            <span class="rating-stars">★★★★☆</span> 4.3 (77% success rate)
+                        </div>
+                    </div>
+                    <div class="package-status status-pending">3rd</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Settings View -->
+        <div class="view" id="adminSettings">
+            <div class="app-header">
+                <div class="app-title">
+                    <i class="fas fa-cog"></i>
+                    <span>Admin Settings</span>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="section-title">Account</div>
+                
+                <div class="driver-info">
+                    <div class="user-avatar">CM</div>
+                    <div class="driver-details">
+                        <div class="driver-name">Chanda Mwape</div>
+                        <div class="driver-rating">Administrator</div>
+                    </div>
+                </div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--primary);">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <div class="action-text">Edit Profile</div>
+                </div>
+                
+                <div class="section-title">System Settings</div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--success);">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="action-text">Notifications</div>
+                </div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--warning);">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="action-text">Drop Points</div>
+                </div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--primary);">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <div class="action-text">User Management</div>
+                </div>
+                
+                <div class="section-title">Data & Reports</div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--success);">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="action-text">Export Data</div>
+                </div>
+                
+                <div class="action-btn">
+                    <div class="action-icon" style="background: var(--danger);">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <div class="action-text">Logout</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- New Package Modal -->
+        <div class="modal" id="newPackageModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Register New Package</div>
+                    <button class="close-modal">&times;</button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Scan Package ID</label>
+                    <input type="text" class="form-input" placeholder="Scan QR code or enter manually">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Sender Name</label>
+                        <input type="text" class="form-input" placeholder="Enter sender name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sender Contact</label>
+                        <input type="text" class="form-input" placeholder="Enter contact">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Recipient Name</label>
+                        <input type="text" class="form-input" placeholder="Enter recipient name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Recipient Contact</label>
+                        <input type="text" class="form-input" placeholder="Enter contact">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Package Description</label>
+                    <input type="text" class="form-input" placeholder="Describe the package contents">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Assign Driver</label>
+                        <select class="form-input">
+                            <option>Select a driver</option>
+                            <option>Chanda Banda</option>
+                            <option>Mwila Tembo</option>
+                            <option>Joseph Phiri</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Drop Point</label>
+                        <select class="form-input">
+                            <option>Select drop point</option>
+                            <option>Point A</option>
+                            <option>Point B</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">QR Code</label>
+                    <div class="qr-code">
+                        <i class="fas fa-qrcode" style="font-size: 3rem; color: var(--gray);"></i>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i>
+                    Register Package
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        const views = document.querySelectorAll('.view');
+        const navItems = document.querySelectorAll('.nav-item');
+        const backButtons = document.querySelectorAll('#backBtn');
+        const switchToAdmin = document.getElementById('switchToAdmin');
+        const switchToDriver = document.getElementById('switchToDriver');
+        
+        // Show a specific view
+        function showView(viewId) {
+            views.forEach(view => {
+                view.classList.remove('view-active');
+            });
+            document.getElementById(viewId).classList.add('view-active');
+            
+            // Update active nav item
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-view') === viewId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // Navigation items
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const viewId = this.getAttribute('data-view');
+                showView(viewId);
+            });
+        });
+        
+        // Back buttons
+        backButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Go back to the appropriate dashboard
+                const currentView = document.querySelector('.view-active').id;
+                if (currentView.includes('admin')) {
+                    showView('adminDashboard');
+                } else {
+                    showView('driverDashboard');
+                }
+            });
+        });
+        
+        // Switch between driver and admin views
+        switchToAdmin.addEventListener('click', function() {
+            showView('adminDashboard');
+        });
+        
+        switchToDriver.addEventListener('click', function() {
+            showView('driverDashboard');
+        });
+        
+        // Package item clicks
+        const packageItems = document.querySelectorAll('.package-item');
+        packageItems.forEach(item => {
+            item.addEventListener('click', function() {
+                showView('packageDetails');
+            });
+        });
+        
+        // Driver info clicks (admin view)
+        const driverInfos = document.querySelectorAll('.driver-info');
+        driverInfos.forEach(info => {
+            info.addEventListener('click', function() {
+                // In a real app, this would show driver details
+                alert('Driver details would open here');
+            });
+        });
+        
+        // Filter options
+        const filterOptions = document.querySelectorAll('.filter-option');
+        filterOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                filterOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // FAB actions
+        const scanFab = document.getElementById('scanFab');
+        const adminFab = document.getElementById('adminFab');
+        const addDriverFab = document.getElementById('addDriverFab');
+        const newPackageBtn = document.getElementById('newPackageBtn');
+        const newPackageModal = document.getElementById('newPackageModal');
+        const closeModal = document.querySelector('.close-modal');
+        
+        scanFab.addEventListener('click', function() {
+            alert('QR Scanner would open here');
+        });
+        
+        adminFab.addEventListener('click', function() {
+            newPackageModal.style.display = 'flex';
+        });
+        
+        addDriverFab.addEventListener('click', function() {
+            alert('Add Driver form would open here');
+        });
+        
+        newPackageBtn.addEventListener('click', function() {
+            newPackageModal.style.display = 'flex';
+        });
+        
+        closeModal.addEventListener('click', function() {
+            newPackageModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target === newPackageModal) {
+                newPackageModal.style.display = 'none';
+            }
+        });
+        
+        // Package action buttons
+        const takePhotoBtn = document.getElementById('takePhotoBtn');
+        const getSignatureBtn = document.getElementById('getSignatureBtn');
+        const startDeliveryBtn = document.getElementById('startDeliveryBtn');
+        const completeDeliveryBtn = document.getElementById('completeDeliveryBtn');
+        const reportIssueBtn = document.getElementById('reportIssueBtn');
+        
+        takePhotoBtn.addEventListener('click', function() {
+            alert('Camera would open to take photo');
+        });
+        
+        getSignatureBtn.addEventListener('click', function() {
+            alert('Signature capture screen would open');
+        });
+        
+        startDeliveryBtn.addEventListener('click', function() {
+            alert('Delivery started! Status updated to In Transit');
+        });
+        
+        completeDeliveryBtn.addEventListener('click', function() {
+            alert('Delivery completed! Status updated to Delivered');
+        });
+        
+        reportIssueBtn.addEventListener('click', function() {
+            alert('Issue reporting form would open');
+        });
+        
+        // Map marker interactions
+        const mapMarkers = document.querySelectorAll('.map-marker');
+        mapMarkers.forEach(marker => {
+            marker.addEventListener('click', function() {
+                const location = this.getAttribute('data-location');
+                if (location !== 'Current') {
+                    alert(`Package ${location} details would open here`);
+                }
+            });
+        });
+        
+        // Map controls
+        const zoomIn = document.getElementById('zoomIn');
+        const zoomOut = document.getElementById('zoomOut');
+        const centerMap = document.getElementById('centerMap');
+        
+        zoomIn.addEventListener('click', function() {
+            alert('Map would zoom in');
+        });
+        
+        zoomOut.addEventListener('click', function() {
+            alert('Map would zoom out');
+        });
+        
+        centerMap.addEventListener('click', function() {
+            alert('Map would center on your location');
+        });
+        
+        // Add touch effects to interactive elements
+        const interactiveElements = document.querySelectorAll('.stat-card, .action-btn, .proof-btn, .driver-info, .package-item');
+        interactiveElements.forEach(el => {
+            el.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            el.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
